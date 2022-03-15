@@ -1,7 +1,7 @@
 Tightyl (4x6)
 ======
 the [Tightyl](https://github.com/okke-formsma/dactyl-manuform-tight/) is a split curved keyboard based on the design of [adereth dactyl](https://github.com/adereth/dactyl-keyboard) and thumb cluster design of the [manuform](https://geekhack.org/index.php?topic=46015.0) keyboard, the hardware is similar to the let's split keyboard. Bll information needed for making one is in the first link.
-![Imgur](https://i.imgur.com/7y0Vbyd.jpg). See also [Tightyl Image Gallery](https://imgur.com/gallery/YePWDY5).
+See also [Tightyl Image Gallery](https://imgur.com/gallery/YePWDY5).
 
 For more information on customizing keymaps, take a look at the primary documentation for [Customizing Your Keymap](/docs/faq_keymap.md) in the main readme.md.
 
