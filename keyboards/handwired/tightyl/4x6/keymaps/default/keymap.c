@@ -25,6 +25,25 @@
 #define ENT_FN LT(_FUNC, KC_ENT)
 #define CTL_QU RCTL_T(KC_QUOT)
 
+const rgblight_segment_t PROGMEM my_default_layer[] = RGBLIGHT_LAYER_SEGMENTS({0,1,HSV_BLACK});
+const rgblight_segment_t PROGMEM symnum_layer[] = RGBLIGHT_LAYER_SEGMENTS({0,1,HSV_RED});
+const rgblight_segment_t PROGMEM spec_layer[] = RGBLIGHT_LAYER_SEGMENTS({0,1,HSV_BLUE});
+const rgblight_segment_t PROGMEM arrows_layer[] = RGBLIGHT_LAYER_SEGMENTS({0,1,HSV_GREEN});
+const rgblight_segment_t PROGMEM func_layer[] = RGBLIGHT_LAYER_SEGMENTS({0,1,HSV_PURPLE});
+
+const rgblight_segment_t* const PROGMEM my_rgblight_layers[] = RGBLIGHT_LAYERS_LIST(
+	my_default_layer,
+	symnum_layer,
+	spec_layer,
+	arrows_layer,
+	func_layer
+);
+
+void keyboard_post_init_user(void)
+{
+	rgblight_layers = my_rgblight_layers;
+}
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     /* Base (Colemak)
      * +-----------------------------------------+                             +-----------------------------------------+
@@ -52,14 +71,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      * |------+------+------+------+------+------|                             |------+------+------+------+------+------|
      * |      |   %  |   ^  |   [  |   ]  |      |                             | NUMLK|   1  |   2  |   3  | ENTER|      |
      * +------+------+------+------+-------------+------+               +------+-------------+------+------+------+------+
-     *               |      |      |      |      |      |               |      |      |      |   0  |   .  |
+     *               |      |      |      |      |      |               |      |  DEL |      |   0  |   .  |
      *               +-------------+-------------+------+               +------+-------------+-------------+
 	 */
     [_SYMNUM] = LAYOUT(
-        KC_EQL,  KC_EXLM, KC_AT,   KC_LCBR, KC_RCBR, KC_AMPR,              		     KC_PSLS, KC_P7,   KC_P8,   KC_P9,   _______, KC_BSLS,
+        KC_EQL,  KC_EXLM, KC_AT,   KC_LCBR, KC_RCBR, KC_AMPR,              		     KC_PSLS, KC_P7,   KC_P8,   KC_P9,   _______, KC_MINS,
         _______, KC_HASH, KC_DLR,  KC_LPRN, KC_RPRN, _______,               		 KC_PAST, KC_P4,   KC_P6,   KC_P6,   KC_PPLS, _______,
-        KC_LSFT, KC_PERC, KC_CIRC, KC_C,    KC_V,    _______,               		 KC_NUM,  KC_P1,   KC_P2,   KC_P3,   KC_PENT, _______,
-                          _______, _______, _______, _______, _______,		_______, _______, _______, KC_P0,   KC_PDOT
+        KC_LSFT, KC_PERC, KC_CIRC, KC_LBRC, KC_RBRC, _______,               		 KC_NUM,  KC_P1,   KC_P2,   KC_P3,   KC_PENT, _______,
+                          _______, _______, _______, _______, _______,		_______, KC_DEL,  _______, KC_P0,   KC_PDOT
 	),
 
     /* Specials
@@ -68,7 +87,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      * |------+------+------+------+------+------|                             |------+------+------+------+------+------|
      * |      |      |      |      |      |      |                             | HOME | PGDN | PGUP |  END | CAPS |      |
      * |------+------+------+------+------+------|                             |------+------+------+------+------+------|
-     * |      |      |      |      |      |      |                             | VOL- | PREV | PLAY | NEXT | SCRLK|      |
+     * | RESET|      |      |      |      |      |                             | VOL- | PREV | PLAY | NEXT | SCRLK| RESET|
      * +------+------+------+------+-------------+------+               +------+-------------+------+------+------+------+
      *               |      |      |      |      |      |               |      |      |      |      |      |
      *               +-------------+-------------+------+               +------+-------------+-------------+
@@ -76,15 +95,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_SPEC] = LAYOUT(
 		_______, _______, _______, _______, _______, _______,              			 KC_VOLU, _______, KC_CALC, KC_PSCR, _______, _______,
         _______, _______, _______, _______, _______, _______,               		 KC_HOME, KC_PGDN, KC_PGUP, KC_END,  KC_CAPS, _______,
-        _______, _______, _______, _______, _______, _______,               		 KC_VOLD, KC_MPRV, KC_MPLY, KC_MNXT, KC_SCRL, _______,
+        QK_BOOT, _______, _______, _______, _______, _______,               		 KC_VOLD, KC_MPRV, KC_MPLY, KC_MNXT, KC_SCRL, QK_BOOT,
                        	  _______, _______, _______, _______, _______,		_______, _______, _______, _______, _______
 	),
 
     /* Arrows
      * +-----------------------------------------+                             +-----------------------------------------+
-     * |      |      |  UP  |      |      |      |                             |      |      |      |      |      |      |
+     * |      |      |      |  UP  |      |      |                             |      |      |      |      |      |      |
      * |------+------+------+------+------+------|                             |------+------+------+------+------+------|
-     * |      | LEFT | DOWN | RIGHT|      |      |                             | LEFT | DOWN |  UP  | RIGHT|      |      |
+     * |      |      | LEFT | DOWN | RIGHT|      |                             | LEFT | DOWN |  UP  | RIGHT|      |      |
      * |------+------+------+------+------+------|                             |------+------+------+------+------+------|
      * |      |      |      |      |      |      |                             |      |      |      |      |      |      |
      * +------+------+------+------+-------------+------+               +------+-------------+------+------+------+------+
@@ -92,8 +111,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      *               +-------------+-------------+------+               +------+-------------+-------------+
 	 */
     [_ARROWS] = LAYOUT(
-		_______, _______, KC_UP,   _______, _______, _______,             			 _______, _______, _______, _______, _______, _______,
-        _______, KC_LEFT, KC_DOWN, KC_RIGHT,_______, _______,             			 KC_LEFT, KC_DOWN, KC_UP,   KC_RIGHT,_______, _______,
+		_______, _______, _______, KC_UP,   _______, _______,             			 _______, _______, _______, _______, _______, _______,
+        _______, _______, KC_LEFT, KC_DOWN, KC_RIGHT,_______,             			 KC_LEFT, KC_DOWN, KC_UP,   KC_RIGHT,_______, _______,
         _______, _______, _______, _______, _______, _______,             			 _______, _______, _______, _______, _______, _______,
                     	  _______, _______, _______, _______, _______,		_______, _______, _______, _______, _______
 	),
@@ -120,4 +139,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 void persistent_default_layer_set(uint16_t default_layer) {
     eeconfig_update_default_layer(default_layer);
     default_layer_set(default_layer);
+}
+
+layer_state_t default_layer_state_set_user(layer_state_t state)
+{
+	rgblight_set_layer_state(0, layer_state_cmp(state, _BASE));
+	return state;
+}
+
+layer_state_t layer_state_set_user(layer_state_t state)
+{
+	rgblight_set_layer_state(1, layer_state_cmp(state, _SYMNUM));
+	rgblight_set_layer_state(2, layer_state_cmp(state, _SPEC));
+	rgblight_set_layer_state(3, layer_state_cmp(state, _ARROWS));
+	rgblight_set_layer_state(4, layer_state_cmp(state, _FUNC));
+	return state;
 }
