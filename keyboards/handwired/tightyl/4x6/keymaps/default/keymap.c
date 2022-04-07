@@ -67,7 +67,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      * +-----------------------------------------+                             +-----------------------------------------+
      * |  =   |   !  |   @  |   {  |   }  |   &  |                             |   /  |   7  |   8  |   9  |      |   -  |
      * |------+------+------+------+------+------|                             |------+------+------+------+------+------|
-     * |      |   #  |   $  |   (  |   )  |      |                             |   *  |   4  |   5  |   6  |   +  |      |
+     * |      |   #  |   $  |   (  |   )  |   ~  |                             |   *  |   4  |   5  |   6  |   +  |      |
      * |------+------+------+------+------+------|                             |------+------+------+------+------+------|
      * |      |   %  |   ^  |   [  |   ]  |      |                             | NUMLK|   1  |   2  |   3  | ENTER|      |
      * +------+------+------+------+-------------+------+               +------+-------------+------+------+------+------+
@@ -76,8 +76,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	 */
     [_SYMNUM] = LAYOUT(
         KC_EQL,  KC_EXLM, KC_AT,   KC_LCBR, KC_RCBR, KC_AMPR,              		     KC_PSLS, KC_P7,   KC_P8,   KC_P9,   _______, KC_MINS,
-        _______, KC_HASH, KC_DLR,  KC_LPRN, KC_RPRN, _______,               		 KC_PAST, KC_P4,   KC_P5,   KC_P6,   KC_PPLS, _______,
-        KC_LSFT, KC_PERC, KC_CIRC, KC_LBRC, KC_RBRC, _______,               		 KC_NUM,  KC_P1,   KC_P2,   KC_P3,   KC_PENT, _______,
+        _______, KC_HASH, KC_DLR,  KC_LPRN, KC_RPRN, KC_GRV,                		 KC_PAST, KC_P4,   KC_P5,   KC_P6,   KC_PPLS, _______,
+        _______, KC_PERC, KC_CIRC, KC_LBRC, KC_RBRC, _______,               		 KC_NUM,  KC_P1,   KC_P2,   KC_P3,   KC_PENT, _______,
                           _______, _______, _______, _______, _______,		_______, KC_DEL,  _______, KC_P0,   KC_PDOT
 	),
 
