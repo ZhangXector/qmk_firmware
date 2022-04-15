@@ -38,6 +38,17 @@ const rgblight_segment_t* const PROGMEM my_rgblight_layers[] = RGBLIGHT_LAYERS_L
 	steno_layer
 );
 
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record)
+{
+	switch (keycode)
+	{
+		case RCTL_T(KC_QUOT):
+			return TAPPING_TERM + 500;
+		default:
+			return TAPPING_TERM;
+	}
+}
+
 void eeconfig_init_user()
 {
 	steno_set_mode(STENO_MODE_GEMINI);
