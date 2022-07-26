@@ -9,7 +9,7 @@ BOOTLOADER = caterina
 #
 BOOTMAGIC_ENABLE = no       # Enable Bootmagic Lite
 MOUSEKEY_ENABLE = no        # Mouse keys
-STENO_ENABLE = yes			# Enable stenography keycodes
+STENO_ENABLE = no			# Enable stenography keycodes
 EXTRAKEY_ENABLE = yes       # Audio control and System control
 CONSOLE_ENABLE = no         # Console for debug
 COMMAND_ENABLE = yes        # Commands for debug and configuration
