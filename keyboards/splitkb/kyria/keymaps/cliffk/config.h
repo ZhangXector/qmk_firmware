@@ -32,3 +32,7 @@
 
 /* Allow tapping term per key */
 #define TAPPING_TERM_PER_KEY
+
+/* Set font width to make character blocks 8x8 */
+#define OLED_FONT_WIDTH 8
+#define OLED_FONT_END 167

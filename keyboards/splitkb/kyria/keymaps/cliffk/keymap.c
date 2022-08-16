@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include QMK_KEYBOARD_H
+#include "progmem.h"
 
 enum layers {
     _BASE = 0,
@@ -203,48 +204,213 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 oled_rotation_t oled_init_user(oled_rotation_t rotation) { return OLED_ROTATION_180; }
 
 bool oled_task_user(void) {
+
+	static const char PROGMEM keyboard_name[] = {
+		0,254,254,254,254,254,240,248,252,254,126, 30, 14,  6,  0,  0,  6, 30, 62,254,254,248,240,224,248,254,254,126, 30,  6,  0,  0,  0,254,254,254,254,254,158,158,158,254,254,252,252,248,  0,  0,  0, 30, 30, 30, 30,254,254,254,254,254, 30, 30, 30, 30,  0,  0,  0,  0,224,252,254,254,126, 62,254,254,254,240,128,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 12, 12, 12, 12,140,252,252,248,  0,  0,  0,  0,  0,  0,  0,  0, 64, 48, 48, 24,248,252,252,  4,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+		0,127,127,127,127,127,  7, 31, 63,127,126,124,120,112, 64,  0,  0,  0,  0,  0,  3,127,127,127,127,127,  1,  0,  0,  0,  0,  0,  0,127,127,127,127,127,  7,  7, 31,127,127,127,123,113, 64,  0,  0,120,120,120,120,127,127,127,127,127,120,120,120,120,  0, 64,120,127,127,127, 63, 31, 30, 30, 31, 31,127,127,127,120, 64,  0,  0,  0,  0,  0,  0, 96,124,126,126,102,103,103, 99, 99, 33,  0,  0,112,112,112, 16,  0,  0,  0,  0,  0, 64,126,127, 31,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
+	};
+
+	static const uint8_t layer_label_width = 6;
+	static const uint8_t lock_row_label_width = 10;
+	static const uint8_t lock_symbol_width = 2;
+
+	static const char PROGMEM layer_indicator[2][48] = {
+		{
+			0,254,254,  0,  0,  0,  0,  0,  0,  0, 16, 16, 16, 16, 16,240,224,  0, 16,240,192,  0,  0,192,240, 16,  0,224,240, 16, 16, 16, 48,224,  0,  0,240,240, 16, 16, 16,  0, 48, 48,  0,  0,  0,  0
+		},
+		{
+			0, 31, 31, 16, 16, 16, 16, 16, 16,  0, 14, 25, 17, 17, 17, 31, 31,  0,  0,  0,135,252, 60,  7,  0,  0,  0, 15, 31, 17, 17, 17, 17, 17,  0,  0, 31, 31,  0,  0,  0,  0, 24, 24,  0,  0,  0,  0
+		}
+	};
+
+	static const char PROGMEM colemak_layer[2][80] = {
+		{
+			248,252,254,  6,  6,  6,  6,  6,  6,  0,224,240, 48, 48, 48, 48,240,224,  0,  0,255,255,255,  0,  0,224,240,176,176,176,240,240,192,  0,  0,240,240,240, 48, 48,240,240,224, 48, 48,240,240,224,  0,  0, 48,176,176,176,176,240,224,128,  0,  0,255,255,255,128,224,240, 48, 16,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
+		},
+		{
+			  7, 15, 31, 24, 24, 24, 24, 24, 24,  0, 15, 31, 24, 24, 24, 24, 31, 15,  0,  0, 31, 31, 31,  0,  0, 15, 31, 25, 25, 25, 25, 25,  1,  0,  0, 31, 31, 31,  0,  0, 31, 31, 31,  0,  0, 31, 31, 31,  0,  0, 31, 31, 25, 25, 25, 31, 31, 31,  0,  0, 31, 31, 31,  1,  7, 31, 28, 24,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
+		}
+	};
+
+	/*
+	static const char PROGMEM QWERTY_layer[2][80] = {
+		{
+			248,252,254,  6,  6,  6,  6,  6,252,252,  0,  0,  2, 62,254,240,  0,  0,240,254, 30,254,240,  0,128,248,254, 30,  2,  0,254,254,254,198,198,198,198,198,  6,  0,254,254,254,198,198,198,198,254,124,  0,  6,  6,  6,  6,254,254,  6,  6,  6,  6,  2,  6, 30,124,240,192,240,124, 30,  6,  2,  0,  0,  0,  0,  0,  0,  0,  0,  0
+		},
+		{
+			  7, 15, 31, 24, 24, 24, 24, 24, 31, 31, 24,  0,  0,  0,  1, 31, 31, 31, 15,  0,  0,  1, 31, 31, 31, 15,  0,  0,  0,  0, 31, 31, 31, 24, 24, 24, 24, 24, 24,  0, 31, 31, 31,  0,  1,  3, 15, 30, 24, 16,  0,  0,  0,  0, 31, 31,  0,  0,  0,  0,  0,  0,  0,  0, 31, 31, 31,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
+		}
+	};
+	*/
+
+	static const char PROGMEM symbols_layer[2][80] = {
+		{
+			124,126,198,198,198,198,198,198,  0, 16,240,240,192,  0,128,240,240, 16,  0,240,240,240, 48, 48,240,240,224, 48, 48,240,240,224,  0,  0,255,255,255, 48, 48, 48,240,240,192,  0,224,240, 48, 48, 48, 48,240,224,  0,  0,255,255,255,  0,  0,224,240,176,176,176,176, 48,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
+		},
+		{
+			 24, 24, 24, 24, 24, 24, 31, 15,  7,  0,  0,131,255,252, 63,  7,  0,  0,  0, 31, 31, 31,  0,  0, 31, 31, 31,  0,  0, 31, 31, 31,  0,  0, 15, 31, 31, 24, 24, 24, 31, 15,  3,  0, 15, 31, 24, 24, 24, 24, 31, 15,  0,  0, 31, 31, 31,  0,  0, 25, 25, 25, 25, 25, 31, 15,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
+		}
+	};
+
+	static const char PROGMEM special_layer[2][80] = {
+		{
+			124,126,198,198,198,198,198,198,  0,  0,240,240,224, 48, 48, 48,240,240,128,  0,224,240,176,176,176,240,240,192,  0,  0,224,240, 48, 48, 48, 48, 48,  0,246,246,246,  0,  0, 48,176,176,176,176,240,224,128,  0,  0,255,255,255,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
+		},
+		{
+			 24, 24, 24, 24, 24, 24, 31, 15,  7,  0,255,255,255, 24, 24, 24, 31, 15,  3,  0, 15, 31, 25, 25, 25, 25, 25,  1,  0,  0, 15, 31, 24, 24, 24, 24, 24,  0, 31, 31, 31,  0,  0, 31, 31, 25, 25, 25, 31, 31, 31,  0,  0, 31, 31, 31,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
+		}
+	};
+
+	static const char PROGMEM arrows_layer[2][80] = {
+		{
+			 0,  0,192,248,126, 14, 62,254,240,128,  0,  0,240,240,224, 48, 48,  0,  0,240,240,224, 48, 48,  0,  0,224,240, 48, 48, 48, 48,240,224,  0, 16,240,240,  0,  0,224,240,240,224,  0,  0,240,240, 16,  0,224,240,176,176,176,176, 48,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
+		},
+		{
+			16, 30, 31,  3,  3,  3,  3,  3, 31, 31, 24,  0, 31, 31, 31,  0,  0,  0,  0, 31, 31, 31,  0,  0,  0,  0, 15, 31, 24, 24, 24, 24, 31, 15,  0,  0,  0, 15, 31, 30, 31,  1,  1, 15, 30, 31, 15,  1,  0,  0, 25, 25, 25, 25, 25, 31, 15,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
+		}
+	};
+
+	static const char PROGMEM game_layer[2][80] = {
+		{
+			248,252,254,  6,  6,  6,198,198,198,198,  0,  0, 48,176,176,176,176,240,224,128,  0,  0,240,240,240, 48, 48,240,240,224, 48, 48,240,240,224,  0,  0,224,240,176,176,176,240,240,192,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
+		},
+		{
+			  7, 15, 31, 24, 24, 24, 24, 31, 31, 31,  0,  0, 31, 31, 25, 25, 25, 31, 31, 31,  0,  0, 31, 31, 31,  0,  0, 31, 31, 31,  0,  0, 31, 31, 31,  0,  0, 15, 31, 25, 25, 25, 25, 25,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
+		}
+	};
+
+	static const char PROGMEM function_layer[2][80] = {
+		{
+			254,254,254,198,198,198,198,198,  6,  0,240,240,240,  0,  0,  0,240,240,  0,  0,240,240,240, 48, 48, 48,240,224,  0,  0,224,240, 48, 48, 48, 48, 48, 48, 48,254,254, 48, 48, 48,  0,246,246,246,  0,  0,224,240, 48, 48, 48, 48,240,224,  0,  0,240,240,240, 48, 48, 48,240,224,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
+		},
+		{
+			 31, 31, 31,  0,  0,  0,  0,  0,  0,  0, 15, 31, 31, 16, 16,  8, 31, 31,  0,  0, 31, 31, 31,  0,  0,  0, 31, 31,  0,  0, 15, 31, 24, 24, 24, 24, 24,  0,  0, 15, 31, 24, 24, 24,  0, 31, 31, 31,  0,  0, 15, 31, 24, 24, 24, 24, 31, 15,  0,  0, 31, 31, 31,  0,  0,  0, 31, 31,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
+		}
+	};
+
+	static const char PROGMEM locks_row[2][80] = {
+		{
+			0,  0,136,204,228, 50, 25, 96, 96, 98, 98, 98, 98,226, 98, 98, 98,  0,  0,  0, 56,136,169,169,169, 41,201,127,139,169,169,169,  9, 57, 24,  0,  0,  0, 32, 96, 67,  2, 66, 68,100,116, 76, 70, 71, 84,116,228,  4,  0,  0,  0, 16, 16, 16,144,112, 16,192,126,243,192, 64, 32, 16, 24,  8,  0,  0,  0,  0,  0,  0,  0,  0,  0
+		},
+		{
+			0,  1, 97, 63,  1,  0,  0,  0, 64, 64, 64, 96, 63,  3,  0,  0,  0,  0,  8, 72, 72,106,122, 90, 74, 74, 74, 74, 90,122,106, 74,  8,  8,  0,  0, 64, 96, 24, 12, 66, 32, 24,  7,  0,120,  7,  0,120, 79, 96, 16,  0,  0, 16, 16,  8,  4, 67, 65, 64,120, 15,  0,  1,  7, 12, 24, 48,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
+		}
+	};
+
+	static const char PROGMEM no_lock[2][16] = {
+		{
+			0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
+		},
+		{
+			0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
+		}
+	};
+
+	static const char PROGMEM num_lock[2][16] = {
+		{
+			0,  0,  0,192,248,252,198,194,194,198,252,248,192,  0,  0,  0
+		},
+		{
+			0,  0,  0,127,127, 64,125,123,119,111, 64,127,127,  0,  0,  0
+		}
+	};
+
+	static const char PROGMEM caps_lock[2][16] = {
+		{
+			0,  0,  0,192,248,252,198,194,194,198,252,248,192,  0,  0,  0
+		},
+		{
+			0,  0,  0,127,127, 97, 76, 94, 94, 94,109,127,127,  0,  0,  0
+		}
+	};
+
+	static const char PROGMEM scroll_lock[2][16] = {
+		{
+			0,  0,  0,192,248,252,198,194,194,198,252,248,192,  0,  0,  0
+		},
+		{
+			0,  0,  0,127,127,109, 90, 90, 86, 86,109,127,127,  0,  0,  0
+		}
+	};
+
     if (is_keyboard_master()) {
-        // QMK Logo and version information
-        // clang-format off
-        static const char PROGMEM qmk_logo[] = {
-            0x80,0x81,0x82,0x83,0x84,0x85,0x86,0x87,0x88,0x89,0x8a,0x8b,0x8c,0x8d,0x8e,0x8f,0x90,0x91,0x92,0x93,0x94,
-            0xa0,0xa1,0xa2,0xa3,0xa4,0xa5,0xa6,0xa7,0xa8,0xa9,0xaa,0xab,0xac,0xad,0xae,0xaf,0xb0,0xb1,0xb2,0xb3,0xb4,
-            0xc0,0xc1,0xc2,0xc3,0xc4,0xc5,0xc6,0xc7,0xc8,0xc9,0xca,0xcb,0xcc,0xcd,0xce,0xcf,0xd0,0xd1,0xd2,0xd3,0xd4,0};
-        // clang-format on
 
-        oled_write_P(qmk_logo, false);
-        oled_write_P(PSTR("Kyria rev2.1\n\n"), false);
+        oled_write_raw_P(keyboard_name, sizeof(keyboard_name));
 
-        // Host Keyboard Layer Status
-        oled_write_P(PSTR("Layer: "), false);
-        switch (get_highest_layer(layer_state|default_layer_state)) {
-            case _BASE:
-                oled_write_P(PSTR("Colemak\n"), false);
-                break;
-            case _SYMNUM:
-                oled_write_P(PSTR("Symbols\n"), false);
-                break;
-            case _SPEC:
-                oled_write_P(PSTR("Special\n"), false);
-                break;
-            case _ARROWS:
-                oled_write_P(PSTR("Arrows\n"), false);
-                break;
-            case _GAME:
-                oled_write_P(PSTR("Game\n"), false);
-                break;
-            case _FUNC:
-                oled_write_P(PSTR("Function\n"), false);
-                break;
-            default:
-                oled_write_P(PSTR("Undefined\n"), false);
-        }
+		for (int i = 0; i < 2; ++i)
+		{
+			oled_set_cursor(0, 3 + i);
 
-        // Write host Keyboard LED Status to OLEDs
-        led_t led_usb_state = host_keyboard_led_state();
-        oled_write_P(led_usb_state.num_lock    ? PSTR("NUMLCK ") : PSTR("       "), false);
-        oled_write_P(led_usb_state.caps_lock   ? PSTR("CAPLCK ") : PSTR("       "), false);
-        oled_write_P(led_usb_state.scroll_lock ? PSTR("SCRLCK ") : PSTR("       "), false);
+			oled_write_raw_P(layer_indicator[i], sizeof(layer_indicator[i]));
+			oled_set_cursor(layer_label_width, 3 + i);
+			
+			// Host Keyboard Layer Status
+			switch (get_highest_layer(layer_state|default_layer_state)) {
+				case _BASE:
+					oled_write_raw_P(colemak_layer[i], sizeof(colemak_layer[i]));
+					break;
+				case _SYMNUM:
+					oled_write_raw_P(symbols_layer[i], sizeof(symbols_layer[i]));
+					break;
+				case _SPEC:
+					oled_write_raw_P(special_layer[i], sizeof(special_layer[i]));
+					break;
+				case _ARROWS:
+					oled_write_raw_P(arrows_layer[i], sizeof(arrows_layer[i]));
+					break;
+				case _GAME:
+					oled_write_raw_P(game_layer[i], sizeof(game_layer[i]));
+					break;
+				case _FUNC:
+					oled_write_raw_P(function_layer[i], sizeof(function_layer[i]));
+					break;
+				default:
+					break;
+			}
+		}
+
+		for (int i = 0; i < 2; ++i)
+		{
+			oled_set_cursor(0, 6 + i);
+
+			oled_write_raw_P(locks_row[i], sizeof(locks_row[i]));
+			oled_set_cursor(lock_row_label_width, 6 + i);
+			
+			// Host Keyboard LED Status
+			led_t led_usb_state = host_keyboard_led_state();
+
+			// Num Lock
+			if (led_usb_state.num_lock)
+			{
+				oled_write_raw_P(num_lock[i], sizeof(num_lock[i]));
+			}
+			else
+			{
+				oled_write_raw_P(no_lock[i], sizeof(no_lock[i]));
+			}
+			oled_set_cursor(lock_row_label_width + lock_symbol_width, 6 + i);
+
+			// Caps Lock
+			if (led_usb_state.caps_lock)
+			{
+				oled_write_raw_P(caps_lock[i], sizeof(caps_lock[i]));
+			}
+			else
+			{
+				oled_write_raw_P(no_lock[i], sizeof(no_lock[i]));
+			}
+			oled_set_cursor(lock_row_label_width + lock_symbol_width * 2, 6 + i);
+
+			// Scroll Lock
+			if (led_usb_state.scroll_lock)
+			{
+				oled_write_raw_P(scroll_lock[i], sizeof(scroll_lock[i]));
+			}
+			else
+			{
+				oled_write_raw_P(no_lock[i], sizeof(no_lock[i]));
+			}
+		}
     } else {
         // clang-format off
     	static const char PROGMEM lotus_logo[] = {
